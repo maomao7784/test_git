@@ -26,3 +26,4 @@ if __name__ == "__main__":
     overlayed_image.save(output_path)
 
     print(f"Overlayed image saved at {output_path}")
+

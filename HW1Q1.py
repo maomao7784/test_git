@@ -1,36 +1,31 @@
-from PIL import Image
+import cv2
+import numpy as np
+
 def merge_images(image1, image2):
-    width1, height1 = image1.size
-    width2, height2 = image2.size
+    h1, w1 = image1.shape[:2]
+    h2, w2 = image2.shape[:2]
 
-    merged_width = width1 + width2
-    merged_height = max(height1, height2)
+    height = max(h1, h2)
+    width = w1 + w2
 
-    merged_image = Image.new("RGBA", (merged_width, merged_height))
+    merged_image = np.zeros((height, width, 3), dtype=np.uint8)
 
-    for y in range(merged_height):
-        for x in range(merged_width):
-            if x < width1:
-                pixel1 = image1.getpixel((x, y))
-                pixel = pixel1
-            elif x - width1 < width2 and y < height2:
-                pixel2 = image2.getpixel((x - width1, y))
-                pixel = pixel2
-            else:
-                pixel = (0, 0, 0, 0)
-            merged_image.putpixel((x, y), pixel)
+    # Place image1 on the left side of the merged image
+    merged_image[:h1, :w1] = image1
+
+    # Place image2 on the right side of the merged image
+    merged_image[:h2, w1:] = image2
 
     return merged_image
 
 if __name__ == "__main__":
     image1_path = "/Users/linyinghsiao/Downloads/HW1/laptop_left.png"
     image2_path = "/Users/linyinghsiao/Downloads/HW1/laptop_right.png"
-    output_path = "/Users/linyinghsiao/Downloads/HW1/Q1/combined_image.png"
-    
-    image1 = Image.open(image1_path).convert("RGBA")
-    image2 = Image.open(image2_path).convert("RGBA")
+    merged_image_path = "/Users/linyinghsiao/Downloads/HW1/Q1/merged_image.png"
+
+    image1 = cv2.imread(image1_path)
+    image2 = cv2.imread(image2_path)
 
     merged_image = merge_images(image1, image2)
-    merged_image.save(output_path)
 
-    print(f"Merged image saved at {output_path}")
+    cv2.imwrite(merged_image_path, merged_image)
